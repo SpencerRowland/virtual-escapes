@@ -1,3 +1,4 @@
+import path from 'path'
 const express = require('express')
 const http = require('http')
 const socket = require('socket.io')
@@ -13,7 +14,8 @@ server.listen(port, function() {
 })
 
 // Static files
-app.use(express.static('public'))
+// app.use(express.static('public'))
+app.use(express.static(path.join(__dirname, 'client', 'build')))
 
 // Routes
 app.get('/', (req, res) => {
