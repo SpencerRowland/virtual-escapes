@@ -1,0 +1,27 @@
+{
+  "name": "virtual-escapes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec babel-node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "socket.io": "^3.0.4",
+    "socket.io-client": "^3.0.4",
+    "styled-components": "^5.2.1",
+    "video.js": "^7.10.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
+    "@babel/preset-env": "^7.12.10",
+    "nodemon": "^2.0.6"
+  }
+}
