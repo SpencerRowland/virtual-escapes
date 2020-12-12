@@ -5,7 +5,6 @@ import Cursor from 'pages/PlayerView/components/Cursor'
 function createCursorCSS(props) {
 	let styles = ''
 	let clientList = Object.values(props.clients)
-	console.log(Object.keys(props.clients))
 	for (let i = 0; i < clientList.length; i++) {
 		styles += `
 			#${clientList[i].id} {

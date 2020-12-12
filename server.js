@@ -1,4 +1,4 @@
-import path from 'path'
+const path = require('path')
 const express = require('express')
 const http = require('http')
 const socket = require('socket.io')
@@ -68,30 +68,26 @@ io.on('connection', function(socket) {
 	newClient(io, socket)
 
 	socket.on("disconnect", function(reason) {
-		// io.sockets.emit("delete", {id: socket.id})
 		delete clients[socket.id]
+		socket.broadcast.emit("cleanup", {
+			clients:clients,
+		})
 		console.log(reason)
 	})
 
 	socket.on("update", function(data) {
 		if (data.id in clients) {
-			// socket.broadcast.emit("update", {
-			// 	id:data.id,
-			// 	display: data.display,
-			// 	activeAsset: data.activeAsset,
-			// 	position: data.position,
-			// })
 			clients[data.id].updatePos(data.display, data.activeAsset, data.position)
 		}
 	})
 
 	socket.on('changeAsset', function(data) {
-		socket.broadcast.emit("changeAsset", {
-			id:data.id,
-			newAssetName: data.newAssetName,
-			prevAssetName: data.prevAssetName,
-			client: clients[data.id]
-		})
+		if (data.id in clients) {
+			clients[data.id].activeAsset = data.newAsset
+			socket.broadcast.emit("changeAsset", {
+				clients: clients
+			})
+		}
 	})
 
 	let updateClientsInterval = setInterval(function() {
@@ -114,27 +110,12 @@ io.on('connection', function(socket) {
 
 
 function newClient(io, socket) {
-	// initClient(io, socket)
 	let clientColor = colors[Math.floor(Math.random() * colors.length)]
-	let client = new Client(socket.id, socket.handshake.query.name, clientColor, "none", initialActiveAsset, [0, 0])
+	let client = new Client(socket.id, socket.handshake.query.name, clientColor, "none", null, [0, 0])
 	clients[socket.id] = client
-	// socket.broadcast.emit("create", client)
-}
-
-function initClient(io, socket) {
-  for (let sid in clients) {
-		// send existing clients to new connecting socket
-		io.to(socket.id).emit('create', clients[sid])
-  }
-}
-
-// manually setting initial active asset
-let initialActiveAsset = 	{
-	"path": "/static/media/avatar.32e70a97.png",
-	"name": "avatar",
-	"label": "Avatar",
-	"type": "img",
-	"activeClients": {},
+	io.emit("clientConnected", {
+		clients: clients,
+	})
 }
 
 function Client(id, name, color=null, display="none", activeAsset=null, position=[0, 0]) {

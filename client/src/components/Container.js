@@ -2,19 +2,21 @@ import styled from 'styled-components'
 
 
 const StyledPageContainer = styled.div`
+	display: flex;
+	flex-direction: column;
 	min-height: 100vh;
-	position: relative;
 	width: 100%;
 `
 
 const StyledPageWrapper = styled.div`
-	margin: 0 auto;
-	max-width: 1000px;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
 `
 
 const Header = styled.header`
-	display: flex;
-	justify-content: center;
+	background-color: #252525;
+	flex: 0 0 56px;
 	width: 100%;
 `
 
@@ -30,18 +32,26 @@ const Logo = styled.img`
 	object-fit: contain;
 `
 
+const Content = styled.div`
+	background-color: #000;
+	display: flex;
+	flex: 1 1 0;
+	overflow: hidden;
+	width: 100%;
+`
+
 const Container = ({ children }) => {
   return (
     <StyledPageContainer>
-			<StyledPageWrapper>
-				<Header>
-					<LogoContainer>
-						{/* <Logo src={ tegLogo } />
-						<Logo src={ gameLogo } /> */}
-					</LogoContainer>
-				</Header>
+			<Header>
+				<LogoContainer>
+					{/* <Logo src={ tegLogo } />
+					<Logo src={ gameLogo } /> */}
+				</LogoContainer>
+			</Header>
+			<Content>
 				{ children }
-			</StyledPageWrapper>
+			</Content>
     </StyledPageContainer>
   );
 }

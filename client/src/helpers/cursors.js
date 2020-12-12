@@ -15,7 +15,13 @@ export function getCursorPosition(position, activeAsset) {
 		if (x < minX || x > maxX || y < minY || y > maxY) {
 			display = 'none'
 		}
-
+	} else if (activeAsset.type === 'img') {
+		let imgElement = document.querySelector('#img img')
+		let imgElementDimensions = imgElement.getBoundingClientRect()
+		console.log(imgElement)
+		console.log(imgElementDimensions)
+		x = imgElementDimensions.width * position[0] + imgElementDimensions.x
+		y = imgElementDimensions.height * position[1] + imgElementDimensions.y
 	} else {
 		let assetWindow = document.getElementById('AssetWindow')
 		x = assetWindow.offsetWidth * position[0] + assetWindow.offsetLeft
@@ -23,6 +29,23 @@ export function getCursorPosition(position, activeAsset) {
 	}
 	return [x, y, display]
 }
+
+function setContainedSize() {
+  // need to consider if img natural width and height is smaller than section
+  let img = document.getElementById(window.activeImgId)
+  let ratio = img.naturalWidth/img.naturalHeight
+  let height = img.height
+  let width = height*ratio
+  if (width > img.width) {
+    width = img.width
+    height = img.width/ratio
+  }
+  window.containedWidth = width
+  window.containedHeight = height
+  window.marginLeft = (img.width - width)/2
+  window.marginTop = (img.height - height)/2
+}
+
 
 function get360CursorPosition(position, pannellum) {
 

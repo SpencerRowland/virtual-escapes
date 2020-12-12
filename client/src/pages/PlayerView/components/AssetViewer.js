@@ -3,34 +3,64 @@ import styled from 'styled-components'
 import videojs from 'video.js'
 
 import Asset from 'pages/PlayerView/components/Asset'
-import Button from 'components/Button'
+
 
 const pannellumConfig = {
 	"autoLoad": true,
 	"hotSpotDebug": true,
 	"default": {
-		"firstScene": "gallery",
+		"firstScene": "tramway",
 		"sceneFadeDuration": 500
 	},
 	"scenes": {
-		"gallery": {
+		"san-francisco": {
 			"type": "equirectangular",
-			"panorama": require('images/360img.jpg').default,
+			"panorama": require('images/san-francisco.jpg').default,
 			"hotSpots": []
 		},
-		"office": {
+		"tramway": {
 			"type": "equirectangular",
-			"panorama": require('images/avatar.png').default,
+			"panorama": require('images/tramway.jpg').default,
+			"hotSpots": []
+		},
+		"bridge": {
+			"type": "equirectangular",
+			"panorama": require('images/bridge.jpg').default,
+			"hotSpots": []
+		},
+		"milky-way": {
+			"type": "equirectangular",
+			"panorama": require('images/milky-way.jpg').default,
+			"hotSpots": []
+		},
+		"mountains": {
+			"type": "equirectangular",
+			"panorama": require('images/mountains.jpg').default,
+			"hotSpots": []
+		},
+		"venice": {
+			"type": "equirectangular",
+			"panorama": require('images/venice.jpg').default,
+			"hotSpots": []
+		},
+		"valley": {
+			"type": "equirectangular",
+			"panorama": require('images/valley.jpg').default,
 			"hotSpots": []
 		}
 	}
 }
 
-const StyledAssetViewer = styled.div``
+const StyledAssetViewer = styled.div`
+	display: flex;
+	align-items: center;
+	flex: 1 1 0;
+	margin: 20px;
+	position: relative;
+`
 
 const StyledAssetContainer = styled.div`
-	background-color: red;
-	border: 8px solid #e4e4e4;
+	background-color: #000;
 	height: 0;
 	padding-bottom: 56.25%;
 	position: relative;
@@ -101,26 +131,19 @@ function AssetViewer({ assets, activeAsset, changeActiveAsset }) {
 	}, [activeAsset])
 
   return (
-		<StyledAssetViewer>
-			<StyledAssetContainer id="AssetWindow">
-				{["pannellum", "img", "video"].map((assetType, idx) => (
-					<Asset key={idx} assetType={assetType} activeAsset={activeAsset}>
-						{assetType === 'img' &&
-							<img className="asset" src="" alt=""/>
-						}
-						{assetType === 'video' &&
-							<div data-vjs-player>
-								<video style={{ width:"100%", height:"100%" }} ref={videoTagRef} className="video-js"></video>
-							</div>
-						}
-					</Asset>
-				))}
-			</StyledAssetContainer>
-			<StyledAssetMenu>
-				{assets.map((asset, idx) => (
-					<Button key={idx} asset={asset} isActive={activeAsset.name === asset.name} onClick={changeActiveAsset} />
-				))}
-			</StyledAssetMenu>
+		<StyledAssetViewer id="AssetWindow">
+			{["pannellum", "img", "video"].map((assetType, idx) => (
+				<Asset key={idx} assetType={assetType} activeAsset={activeAsset}>
+					{assetType === 'img' &&
+						<img className="asset" src="" alt=""/>
+					}
+					{assetType === 'video' &&
+						<div data-vjs-player>
+							<video style={{ width:"100%", height:"100%" }} ref={videoTagRef} className="video-js"></video>
+						</div>
+					}
+				</Asset>
+			))}
 		</StyledAssetViewer>
   );
 }
