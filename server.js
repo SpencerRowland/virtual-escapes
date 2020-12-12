@@ -65,7 +65,10 @@ const colors = [
 
 io.on('connection', function(socket) {
 	console.log('made connection ', socket.id)
-	newClient(io, socket)
+	
+	socket.on("setupClient", function(data) {
+		newClient(io, data.id, data.name)
+	})
 
 	socket.on("disconnect", function(reason) {
 		delete clients[socket.id]
@@ -109,10 +112,10 @@ io.on('connection', function(socket) {
 })
 
 
-function newClient(io, socket) {
+function newClient(io, id, name) {
 	let clientColor = colors[Math.floor(Math.random() * colors.length)]
-	let client = new Client(socket.id, socket.handshake.query.name, clientColor, "none", null, [0, 0])
-	clients[socket.id] = client
+	let client = new Client(id, name, clientColor, "none", null, [0, 0])
+	clients[id] = client
 	io.emit("clientConnected", {
 		clients: clients,
 	})

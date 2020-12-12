@@ -28,7 +28,7 @@ const Cursor = ({id, name, color}) => {
 	return (
 			<StyledCursor id={id} className="cursor" color={color}>
 				<CursorSVG />
-				<span>{id}</span>
+				<span>{name}</span>
 			</StyledCursor>
   )
 }

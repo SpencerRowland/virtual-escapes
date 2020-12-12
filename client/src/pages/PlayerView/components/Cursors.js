@@ -22,11 +22,6 @@ const StyledCursors = styled.div`
 
 const Cursors = (props) => {
 	return (
-    // <div id="cursors" clients={props.clients}>
-		// 	{Object.values(props.clients).map((client, idx) => (
-		// 		<Cursor key={client.id} client={client}></Cursor>
-		// 	))}
-    // </div>
     <StyledCursors id="cursors" clients={props.clients}>
 			{Object.values(props.clients).map((client, idx) => (
 				<Cursor

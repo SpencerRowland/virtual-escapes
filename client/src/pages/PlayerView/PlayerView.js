@@ -6,6 +6,7 @@ import 'simplebar' // or "import SimpleBar from 'simplebar';" if you want to use
 import 'simplebar/dist/simplebar.css'
 
 import Container from 'components/Container'
+import Modal from 'components/Modal'
 import AssetContainer from 'pages/PlayerView/components/AssetContainer'
 import AssetThumbnail from 'pages/PlayerView/components/AssetThumbnail'
 import AssetViewer from 'pages/PlayerView/components/AssetViewer'
@@ -21,6 +22,7 @@ function PlayerView() {
 	const [clients, setClients] = useState({})
 	const [activeAsset, setActiveAsset] = useState(initialAsset)
 	const [assets, setAssets] = useState(initialAssets)
+	const [showModal, setShowModal] = useState(true)
 	const activeAssetRef = useRef(activeAsset)
 
 	useEffect(() => {
@@ -108,6 +110,16 @@ function PlayerView() {
 
 	}, [activeAsset])
 
+	function setPlayerName(e) {
+		console.log('hi there')
+		let playerNameInput = document.querySelector('input[name="playerName"]')
+		localStorage.setItem('playerName', playerNameInput.value)
+		socket.emit('setupClient', {
+			id: socket.id,
+			name: playerNameInput.value,
+		})
+		setShowModal(false)
+	}
 
 	function changeActiveAsset(newAsset) {
 		if (newAsset.name !== activeAsset.name) {
@@ -194,6 +206,7 @@ function PlayerView() {
 				activeAssetName={activeAsset.name}
 				changeActiveAsset={changeActiveAsset}
 			/>
+			<Modal showModal={showModal} onClick={setPlayerName}></Modal>
 		</Container>
   )
 }
