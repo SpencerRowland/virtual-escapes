@@ -6,6 +6,7 @@ import 'simplebar' // or "import SimpleBar from 'simplebar';" if you want to use
 import 'simplebar/dist/simplebar.css'
 
 import Container from 'components/Container'
+import AssetContainer from 'pages/PlayerView/components/AssetContainer'
 import AssetThumbnail from 'pages/PlayerView/components/AssetThumbnail'
 import AssetViewer from 'pages/PlayerView/components/AssetViewer'
 import Cursors from 'pages/PlayerView/components/Cursors'
@@ -15,19 +16,6 @@ import { getCursorPosition } from 'helpers/cursors'
 const SERVER = "http://localhost:4001/"
 const socket = socketIOClient(SERVER, {query: 'name=Mary'})
 
-const Assets = styled.div`
-	display: flex;
-	flex: 0 0 175px;
-	flex-direction: column;
-	overflow: auto;
-	padding: ${props => props.position === 'left' ? "12px 12px 16px 16px" : "12px 16px 16px 12px"};
-	span {
-		text-align: ${props => props.position};
-	}
-	.simplebar-scrollbar:before {
-		background-image: linear-gradient(-131deg, rgb(103, 101, 101) 0%, rgb(51, 51, 51) 100%);
-	}
-`
 
 function PlayerView() {
 	const [clients, setClients] = useState({})
@@ -188,31 +176,24 @@ function PlayerView() {
 
   return (
 		<Container>
-			<Assets position="left" data-simplebar data-simplebar-direction="rtl" data-simplebar-auto-hide="false">
-				{assets.filter(asset => asset.section === "spaces").map((asset, idx) => (
-					<AssetThumbnail
-						key={idx}
-						asset={asset}
-						activeAssetName={activeAsset.name}
-						onClick={changeActiveAsset}
-						position="left"
-					>
-					</AssetThumbnail>
-				))}
-			</Assets>
+			<AssetContainer
+				position="left"
+				header="Rooms"
+				section="spaces"
+				assets={assets}
+				activeAssetName={activeAsset.name}
+				changeActiveAsset={changeActiveAsset}
+			/>
 			<AssetViewer assets={assets}  activeAsset={activeAsset}></AssetViewer>
 			<Cursors clients={clients}></Cursors>
-			<Assets position="right" data-simplebar data-simplebar-auto-hide="false">
-				{assets.filter(asset => asset.section === "inventory").map((asset, idx) => (
-					<AssetThumbnail
-						key={idx}
-						asset={asset}
-						activeAssetName={activeAsset.name}
-						onClick={changeActiveAsset}
-						position="right"
-					></AssetThumbnail>
-				))}
-			</Assets>
+			<AssetContainer
+				position="right"
+				header="Inventory"
+				section="inventory"
+				assets={assets}
+				activeAssetName={activeAsset.name}
+				changeActiveAsset={changeActiveAsset}
+			/>
 		</Container>
   )
 }

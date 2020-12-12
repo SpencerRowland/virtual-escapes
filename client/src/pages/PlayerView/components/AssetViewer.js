@@ -55,28 +55,8 @@ const StyledAssetViewer = styled.div`
 	display: flex;
 	align-items: center;
 	flex: 1 1 0;
-	margin: 20px;
+	margin: 42px;
 	position: relative;
-`
-
-const StyledAssetContainer = styled.div`
-	background-color: #000;
-	height: 0;
-	padding-bottom: 56.25%;
-	position: relative;
-	width: 100%;
-`
-
-const StyledAssetMenu = styled.div`
-	background-color: #e4e4e4;
-	display: flex;
-	justify-content: flex-start;
-	padding: 10px 8px 16px;
-	overflow: hidden;
-	width: 100%;
-	button {
-		margin: 0 5px;
-	}
 `
 
 function AssetViewer({ assets, activeAsset, changeActiveAsset }) {
