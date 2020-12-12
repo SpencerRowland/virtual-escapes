@@ -83,7 +83,12 @@ function PlayerView() {
 				let display = assetWindow.contains(evt.target) ? 'block' : 'none'
 
 				if (activeAsset.type === 'pannellum') {
-					position = window.pn.mouseEventToCoords(evt)
+					if (window.pn) {
+						position = window.pn.mouseEventToCoords(evt)
+					} else {
+						position = [0, 0]
+						display = 'none'
+					}
 				} else if (activeAsset.type === 'img') {
 					let imgElement = assetWindow.querySelector('#img img')
 					let imgElementDimensions = imgElement.getBoundingClientRect()
