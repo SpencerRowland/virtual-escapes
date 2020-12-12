@@ -2,15 +2,18 @@ import styled, {css} from 'styled-components'
 
 
 const AssetContainer = styled.div`
+	border-radius: 2px;
 	cursor: pointer;
 	display: flex;
 	flex-direction: column;
-	margin-bottom: 16px;
+	margin-bottom: 12px;
+	padding: 4px;
 	position: relative;
 	span {
 		color: #aaa;
 		margin-top: 4px;
 	}
+	background-color: ${props => props.isActive ? 'rgba(255, 255, 255, .3)' : 'transparent' };
 `
 
 const ImgContainer = styled.div`
@@ -41,7 +44,7 @@ const StyledActiveClients = styled.div`
 		css`left: -12px;`
 	}
 	position: absolute;
-	top: 2px;
+	top: 6px;
 `
 
 const StyledActiveClient = styled.div`

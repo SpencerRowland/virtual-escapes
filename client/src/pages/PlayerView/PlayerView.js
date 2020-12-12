@@ -20,7 +20,7 @@ const Assets = styled.div`
 	flex: 0 0 175px;
 	flex-direction: column;
 	overflow: auto;
-	padding: ${props => props.position === 'left' ? "16px 16px 16px 20px" : "16px 20px 16px 16px"};
+	padding: ${props => props.position === 'left' ? "12px 12px 16px 16px" : "12px 16px 16px 12px"};
 	span {
 		text-align: ${props => props.position};
 	}
