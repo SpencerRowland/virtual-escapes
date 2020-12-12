@@ -7,7 +7,6 @@ import Asset from 'pages/PlayerView/components/Asset'
 
 const pannellumConfig = {
 	"autoLoad": true,
-	"hotSpotDebug": true,
 	"default": {
 		"firstScene": "tramway",
 		"sceneFadeDuration": 500
@@ -57,6 +56,9 @@ const StyledAssetViewer = styled.div`
 	flex: 1 1 0;
 	margin: 42px;
 	position: relative;
+	.pnlm-about-msg {
+		display: none !important;
+	}
 `
 
 function AssetViewer({ assets, activeAsset, changeActiveAsset }) {
