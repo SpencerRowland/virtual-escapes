@@ -1,6 +1,6 @@
 
 export function getCursorPosition(position, activeAsset) {
-	let x, y, display = 'block'
+	let x, y, display = 'block', outOfView = ''
 	if (activeAsset.type === 'pannellum') {
 		let cursorPosition = get360CursorPosition(position, window.pn)
 		x = cursorPosition[0]
@@ -8,13 +8,18 @@ export function getCursorPosition(position, activeAsset) {
 
 		// set display to none if cursor is out of view on 360 images
 		let canvasDimensions = window.pn.getRenderer().getCanvas().getBoundingClientRect()
-		let minX = canvasDimensions.left
-		let maxX = canvasDimensions.right
-		let minY = canvasDimensions.top
-		let maxY = canvasDimensions.bottom
-		if (x < minX || x > maxX || y < minY || y > maxY) {
-			display = 'none'
+		let dimensions = {
+			minX: canvasDimensions.left,
+			maxX: canvasDimensions.right,
+			minY: canvasDimensions.top,
+			maxY: canvasDimensions.bottom,
+			width: canvasDimensions.width,
+			height: canvasDimensions.height,
 		}
+		[x, y] = getOutOfViewCoordinates(x, y, dimensions)
+		// if (x < minX || x > maxX || y < minY || y > maxY) {
+		// 	display = 'none'
+		// }
 	} else if (activeAsset.type === 'img') {
 		let imgElement = document.querySelector('#img img')
 		let imgElementDimensions = imgElement.getBoundingClientRect()
@@ -27,7 +32,57 @@ export function getCursorPosition(position, activeAsset) {
 		x = assetWindow.offsetWidth * position[0] + assetWindow.offsetLeft
 		y = assetWindow.offsetHeight * position[1] + assetWindow.offsetTop
 	}
-	return [x, y, display]
+	return [x, y, display, outOfView]
+}
+
+function getOutOfViewCoordinates(x, y, dimensions) {
+	let minX = dimensions.left
+	let maxX = dimensions.right
+	let minY = dimensions.top
+	let maxY = dimensions.bottom
+	let width = dimensions.width
+	let height = dimensions.height
+	let xOutOfBounds = 0
+	let yOutOfBounds = 0
+	if (x > maxX) {
+		xOutOfBounds = x - maxX
+	} else if (x < minX) {
+		xOutOfBounds = x - minX
+	}
+	if (y > maxY) {
+		yOutOfBounds = y - maxY
+	} else if (y < minY) {
+		yOutOfBounds = y - minY
+	}
+	if (Math.abs(xOutOfBounds) > 0 || Math.abs(yOutOfBounds) > 0) {
+		let xMidPoint = (minX + maxX)/2
+		let yMidPoint = (minY + maxY)/2
+		let xAbs, yAbs
+		if (Math.abs(xOutOfBounds) > Math.abs(yOutOfBounds)) {
+			// coordinates will be closer to x axis
+			let a = Math.abs(xOutOfBounds) + width
+			let b = Math.abs(yOutOfBounds) + height
+			let c = pythagorean(a, b)
+			let pctX = (width/a)
+			yAbs = Math.sqrt(Math.pow(c*pctX, 2) - Math.pow(width, 2))
+			xAbs = width
+		} else {
+			// coordinates will be closer to y axis
+			let a = Math.abs(xOutOfBounds) + width
+			let b = Math.abs(yOutOfBounds) + height
+			let c = pythagorean(a, b)
+			let pctY = (height/b)
+			xAbs = Math.sqrt(Math.pow(c*pctY, 2) - Math.pow(height, 2))
+			yAbs = height
+		}
+		x = xOutOfBounds > 0 ? xMidPoint + xAbs : xMidPoint - xAbs
+		y = yOutOfBounds > 0 ? yMidPoint + yAbs : yMidPoint - yAbs
+	}
+	return [x, y]
+}
+
+function pythagorean(sideA, sideB){
+  return Math.sqrt(Math.pow(sideA, 2) + Math.pow(sideB, 2));
 }
 
 function setContainedSize() {
