@@ -94,16 +94,18 @@ io.on('connection', function(socket) {
 	})
 
 	let updateClientsInterval = setInterval(function() {
-		let filteredClients = {}
-		let connectedClients = io.sockets.sockets
-		{Object.values(clients).map((client, idx) => {
-			if (connectedClients.has(client.id)) {
-				filteredClients[client.id] = client
-			}
-		})}
-		socket.emit("updateClients", {
-			clients:filteredClients,
-		})
+		if (socket.id in clients) {
+			let filteredClients = {}
+			let connectedClients = io.sockets.sockets
+			{Object.values(clients).map((client, idx) => {
+				if (connectedClients.has(client.id)) {
+					filteredClients[client.id] = client
+				}
+			})}
+			socket.emit("updateClients", {
+				clients:filteredClients,
+			})
+		}
 	}, 100)
 
 	console.log(io.sockets.sockets.keys())
