@@ -1,13 +1,11 @@
 import React from "react";
 
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import {ReactComponent as CursorSVG} from 'images/cursor.svg'
+import {ReactComponent as CaretSVG} from 'images/caret-up.svg'
 
 
 const StyledCursor = styled.div`
-	svg {
-		width: 15px;
-	}
 	span {
 		background-color: ${props => props.color[0]};
 		border: 1px solid ${props => props.color[1]};
@@ -21,13 +19,16 @@ const StyledCursor = styled.div`
 	}
 `
 	
-const Cursor = ({id, name, color}) => {
+const Cursor = ({id, name, color, outOfView}) => {
 
 	console.log('re-rendered cursor: ', id)
 
 	return (
-			<StyledCursor id={id} className="cursor" color={color}>
-				<CursorSVG />
+			<StyledCursor id={id} className="cursor" color={color} outOfView={outOfView}>
+				{outOfView
+					? <CaretSVG />
+					: <CursorSVG />
+				}
 				<span>{name}</span>
 			</StyledCursor>
   )
@@ -36,6 +37,7 @@ const Cursor = ({id, name, color}) => {
 function cursorPropsAreEqual(prevCursor, nextCursor) {
 	return prevCursor.id === nextCursor.id 
 		&& prevCursor.name === nextCursor.name
+		&& prevCursor.outOfView === nextCursor.outOfView
 }
 
 export default React.memo(Cursor, cursorPropsAreEqual);

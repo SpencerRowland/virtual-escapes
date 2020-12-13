@@ -2,24 +2,26 @@
 export function getCursorPosition(position, activeAsset) {
 	let x, y, display = 'block', outOfView = ''
 	if (activeAsset.type === 'pannellum') {
-		let cursorPosition = get360CursorPosition(position, window.pn)
-		x = cursorPosition[0]
-		y = cursorPosition[1]
-
-		// set display to none if cursor is out of view on 360 images
-		let canvasDimensions = window.pn.getRenderer().getCanvas().getBoundingClientRect()
-		let dimensions = {
-			minX: canvasDimensions.left,
-			maxX: canvasDimensions.right,
-			minY: canvasDimensions.top,
-			maxY: canvasDimensions.bottom,
-			width: canvasDimensions.width,
-			height: canvasDimensions.height,
+		if (window.pn) {
+			let cursorPosition = get360CursorPosition(position, window.pn)
+			x = cursorPosition[0]
+			y = cursorPosition[1]
+	
+			// set display to none if cursor is out of view on 360 images
+			let canvasDimensions = window.pn.getRenderer().getCanvas().getBoundingClientRect()
+			let outOfViewCoordinates = getOutOfViewCoordinates(x, y, canvasDimensions)
+			x = outOfViewCoordinates[0]
+			y = outOfViewCoordinates[1]
+			outOfView = outOfViewCoordinates[2]
+			// [x, y] = getOutOfViewCoordinates(x, y, canvasDimensions)
+			// if (x < minX || x > maxX || y < minY || y > maxY) {
+			// 	display = 'none'
+			// }
+		} else {
+			x = 0
+			y = 0
+			display = 'none'
 		}
-		[x, y] = getOutOfViewCoordinates(x, y, dimensions)
-		// if (x < minX || x > maxX || y < minY || y > maxY) {
-		// 	display = 'none'
-		// }
 	} else if (activeAsset.type === 'img') {
 		let imgElement = document.querySelector('#img img')
 		let imgElementDimensions = imgElement.getBoundingClientRect()
@@ -44,6 +46,7 @@ function getOutOfViewCoordinates(x, y, dimensions) {
 	let height = dimensions.height
 	let xOutOfBounds = 0
 	let yOutOfBounds = 0
+	let outOfView = null
 	if (x > maxX) {
 		xOutOfBounds = x - maxX
 	} else if (x < minX) {
@@ -60,25 +63,38 @@ function getOutOfViewCoordinates(x, y, dimensions) {
 		let xAbs, yAbs
 		if (Math.abs(xOutOfBounds) > Math.abs(yOutOfBounds)) {
 			// coordinates will be closer to x axis
-			let a = Math.abs(xOutOfBounds) + width
-			let b = Math.abs(yOutOfBounds) + height
+			let a = Math.abs(xOutOfBounds) + width/2
+			let b = Math.abs(yOutOfBounds) + height/2
 			let c = pythagorean(a, b)
-			let pctX = (width/a)
-			yAbs = Math.sqrt(Math.pow(c*pctX, 2) - Math.pow(width, 2))
-			xAbs = width
+			let pctX = (width/2/a)
+			yAbs = Math.sqrt(Math.pow(c*pctX, 2) - Math.pow(width/2, 2))
+			xAbs = width/2
 		} else {
 			// coordinates will be closer to y axis
-			let a = Math.abs(xOutOfBounds) + width
-			let b = Math.abs(yOutOfBounds) + height
+			let a = Math.abs(xOutOfBounds) + width/2
+			let b = Math.abs(yOutOfBounds) + height/2
 			let c = pythagorean(a, b)
-			let pctY = (height/b)
-			xAbs = Math.sqrt(Math.pow(c*pctY, 2) - Math.pow(height, 2))
-			yAbs = height
+			let pctY = (height/2/b)
+			xAbs = Math.sqrt(Math.pow(c*pctY, 2) - Math.pow(height/2, 2))
+			yAbs = height/2
 		}
 		x = xOutOfBounds > 0 ? xMidPoint + xAbs : xMidPoint - xAbs
 		y = yOutOfBounds > 0 ? yMidPoint + yAbs : yMidPoint - yAbs
+		if (Math.abs(xOutOfBounds) > Math.abs(yOutOfBounds)) {
+			if (xOutOfBounds > 0) {
+				outOfView = 'right'
+			} else {
+				outOfView = 'left'
+			}
+		} else {
+			if (yOutOfBounds > 0) {
+				outOfView = 'bottom'
+			} else {
+				outOfView = 'top'
+			}
+		}
 	}
-	return [x, y]
+	return [x, y, outOfView]
 }
 
 function pythagorean(sideA, sideB){

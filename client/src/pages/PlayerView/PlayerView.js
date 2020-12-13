@@ -111,7 +111,6 @@ function PlayerView() {
 	}, [activeAsset])
 
 	function setPlayerName(e) {
-		console.log('hi there')
 		let playerNameInput = document.querySelector('input[name="playerName"]')
 		localStorage.setItem('playerName', playerNameInput.value)
 		socket.emit('setupClient', {
@@ -144,6 +143,7 @@ function PlayerView() {
 						let cursorPosition = getCursorPosition(client.position, client.activeAsset)
 						client.x = cursorPosition[0]
 						client.y = cursorPosition[1]
+						client.outOfView = cursorPosition[3]
 						display = cursorPosition[2]
 					}
 					client.display = display
