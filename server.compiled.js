@@ -1,8 +1,6 @@
 "use strict";
 
-var _path = _interopRequireDefault(require("path"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+var path = require('path');
 
 var express = require('express');
 
@@ -20,7 +18,7 @@ server.listen(port, function () {
 }); // Static files
 // app.use(express.static('public'))
 
-app.use(express["static"](_path["default"].join(__dirname, 'client', 'build'))); // Routes
+app.use(express["static"](path.join(__dirname, 'client', 'build'))); // Routes
 
 app.get('/', function (req, res) {
   res.send('just gonna send it');
@@ -42,70 +40,56 @@ var clients = {};
 var colors = [['#e6194B', '#ffffff'], ['#3cb44b', '#ffffff'], ['#ffe119', '#000000'], ['#4363d8', '#ffffff'], ['#f58231', '#ffffff'], ['#911eb4', '#ffffff'], ['#42d4f4', '#000000'], ['#f032e6', '#ffffff'], ['#bfef45', '#000000'], ['#fabed4', '#000000'], ['#469990', '#ffffff'], ['#dcbeff', '#000000'], ['#9A6324', '#ffffff'], ['#fffac8', '#000000'], ['#800000', '#ffffff'], ['#aaffc3', '#000000'], ['#808000', '#ffffff'], ['#ffd8b1', '#000000'], ['#000075', '#ffffff'], ['#a9a9a9', '#ffffff'], ['#ffffff', '#000000'], ['#000000', '#ffffff']];
 io.on('connection', function (socket) {
   console.log('made connection ', socket.id);
-  newClient(io, socket);
+  socket.on("setupClient", function (data) {
+    newClient(io, data.id, data.name);
+  });
   socket.on("disconnect", function (reason) {
-    // io.sockets.emit("delete", {id: socket.id})
     delete clients[socket.id];
+    socket.broadcast.emit("cleanup", {
+      clients: clients
+    });
     console.log(reason);
   });
   socket.on("update", function (data) {
     if (data.id in clients) {
-      // socket.broadcast.emit("update", {
-      // 	id:data.id,
-      // 	display: data.display,
-      // 	activeAsset: data.activeAsset,
-      // 	position: data.position,
-      // })
       clients[data.id].updatePos(data.display, data.activeAsset, data.position);
     }
   });
   socket.on('changeAsset', function (data) {
-    socket.broadcast.emit("changeAsset", {
-      id: data.id,
-      newAssetName: data.newAssetName,
-      prevAssetName: data.prevAssetName,
-      client: clients[data.id]
-    });
-  });
-  var updateClientsInterval = setInterval(function () {
-    var filteredClients = {};
-    var connectedClients = io.sockets.sockets;
-    {
-      Object.values(clients).map(function (client, idx) {
-        if (connectedClients.has(client.id)) {
-          filteredClients[client.id] = client;
-        }
+    if (data.id in clients) {
+      clients[data.id].activeAsset = data.newAsset;
+      socket.broadcast.emit("changeAsset", {
+        clients: clients
       });
     }
-    socket.emit("updateClients", {
-      clients: filteredClients
-    });
+  });
+  var updateClientsInterval = setInterval(function () {
+    if (socket.id in clients) {
+      var filteredClients = {};
+      var connectedClients = io.sockets.sockets;
+      {
+        Object.values(clients).map(function (client, idx) {
+          if (connectedClients.has(client.id)) {
+            filteredClients[client.id] = client;
+          }
+        });
+      }
+      socket.emit("updateClients", {
+        clients: filteredClients
+      });
+    }
   }, 100);
   console.log(io.sockets.sockets.keys());
 });
 
-function newClient(io, socket) {
-  // initClient(io, socket)
+function newClient(io, id, name) {
   var clientColor = colors[Math.floor(Math.random() * colors.length)];
-  var client = new Client(socket.id, socket.handshake.query.name, clientColor, "none", initialActiveAsset, [0, 0]);
-  clients[socket.id] = client; // socket.broadcast.emit("create", client)
+  var client = new Client(id, name, clientColor, "none", null, [0, 0]);
+  clients[id] = client;
+  io.emit("clientConnected", {
+    clients: clients
+  });
 }
-
-function initClient(io, socket) {
-  for (var sid in clients) {
-    // send existing clients to new connecting socket
-    io.to(socket.id).emit('create', clients[sid]);
-  }
-} // manually setting initial active asset
-
-
-var initialActiveAsset = {
-  "path": "/static/media/avatar.32e70a97.png",
-  "name": "avatar",
-  "label": "Avatar",
-  "type": "img",
-  "activeClients": {}
-};
 
 function Client(id, name) {
   var color = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
