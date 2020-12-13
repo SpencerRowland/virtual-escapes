@@ -1,5 +1,8 @@
 node_modules
 .*
+
+debug.log
+
 !.babelrc
 !.gitignore
 
