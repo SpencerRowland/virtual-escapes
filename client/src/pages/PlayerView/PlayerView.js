@@ -14,7 +14,7 @@ import Cursors from 'pages/PlayerView/components/Cursors'
 
 import { getCursorPosition } from 'helpers/cursors'
 
-const SERVER = "http://localhost:4001/"
+const SERVER = window.location.host
 const socket = socketIOClient(SERVER, {query: 'name=Mary'})
 
 
