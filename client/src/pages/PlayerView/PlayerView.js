@@ -206,7 +206,7 @@ function PlayerView() {
 				activeAssetName={activeAsset.name}
 				changeActiveAsset={changeActiveAsset}
 			/>
-			<Modal showModal={showModal} onClick={setPlayerName}></Modal>
+			<Modal showModal={showModal} onSubmit={setPlayerName}></Modal>
 		</Container>
   )
 }
